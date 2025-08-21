@@ -11,5 +11,4 @@ public class RealBookStoreApplication {
     public static void main(String[] args) {
         SpringApplication.run(RealBookStoreApplication.class, args);
     }
-
 }
