@@ -10,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.urosdragojevic.realbookstore.audit.AuditLogger;
 
 @Controller
 public class CommentController {
     private static final Logger LOG = LoggerFactory.getLogger(CommentController.class);
+    private static final AuditLogger auditLoger = AuditLogger.getAuditLogger(CommentController.class);
 
     private CommentRepository commentRepository;
 
@@ -27,6 +29,7 @@ public class CommentController {
         User user = (User) authentication.getPrincipal();
         comment.setUserId(user.getId());
         commentRepository.create(comment);
+        auditLoger.audit("New comment: " + comment.toString());
 
         return "redirect:/books/" + comment.getBookId();
     }

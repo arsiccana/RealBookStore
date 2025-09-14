@@ -33,12 +33,12 @@ public class PersonRepository {
                 personList.add(createPersonFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Get all persons failed!", e);
         }
         return personList;
     }
 
-    public List<Person> search(String searchTerm) throws SQLException {
+    public List<Person> search(String searchTerm){
         List<Person> personList = new ArrayList<>();
         String query = "SELECT id, firstName, lastName, email FROM persons WHERE UPPER(firstName) like UPPER('%" + searchTerm + "%')" +
                 " OR UPPER(lastName) like UPPER('%" + searchTerm + "%')";
@@ -49,6 +49,9 @@ public class PersonRepository {
                 personList.add(createPersonFromResultSet(rs));
             }
         }
+    catch(SQLException e) {
+        LOG.error("Search persons by searchTerm failed!", e);
+    }
         return personList;
     }
 
@@ -61,7 +64,7 @@ public class PersonRepository {
                 return createPersonFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Get person by id failed!", e);
         }
 
         return null;
@@ -74,7 +77,7 @@ public class PersonRepository {
         ) {
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Delete person by id failed!", e);
         }
     }
 
@@ -99,7 +102,7 @@ public class PersonRepository {
             statement.setString(2, email);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Update person failed!", e);
         }
     }
 }

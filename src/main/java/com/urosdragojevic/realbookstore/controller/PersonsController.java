@@ -24,7 +24,7 @@ import java.nio.file.AccessDeniedException;
 public class PersonsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersonsController.class);
-    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(PersonRepository.class);
+    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(PersonsController.class);
 
     private final PersonRepository personRepository;
     private final UserRepository userRepository;
@@ -64,7 +64,7 @@ public class PersonsController {
     public String updatePerson(Person person, HttpSession session, @RequestParam("csrfToken") String csrfToken, HttpServletRequest request) throws AccessDeniedException {
         String csrf = session.getAttribute("CSRF_TOKEN").toString();
         if(!csrf.equals(csrfToken)){
-            throw new AccessDeniedException("Forbidden");
+            auditLogger.audit("Invalid csrf token");
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -79,6 +79,8 @@ public class PersonsController {
             throw new AccessDeniedException("Can`t update person");
         }
         personRepository.update(person);
+        auditLogger.audit("Update person " + person.toString());
+
         String referer = request.getHeader("Referer");
         if (referer != null && referer.contains("/myprofile")) {
             return "redirect:/myprofile";
